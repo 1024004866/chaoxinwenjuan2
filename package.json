@@ -23,7 +23,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint \"src/**/*.{js,ts,jsx,tsx}\"",
-    "format": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"" 
+    "format": "prettier --write \"src/**/*.{js,ts,jsx,tsx}\"",
+    "prepare": "husky"
   },
   "eslintConfig": {
     "extends": [
@@ -44,7 +45,8 @@
     ]
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@commitlint/cli": "^20.5.2",
+    "@commitlint/config-conventional": "^20.5.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.57.1",
@@ -52,6 +54,7 @@
     "eslint-plugin-prettier": "^4.2.5",
     "eslint-plugin-react": "^7.37.5",
     "globals": "^17.5.0",
+    "husky": "^9.1.7",
     "prettier": "^2.8.8"
   }
 }
