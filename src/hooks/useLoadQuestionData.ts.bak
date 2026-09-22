@@ -1,0 +1,33 @@
+import { useParams } from 'react-router-dom'
+import { getQuestionService } from '../services/question'
+import { useRequest } from 'ahooks'
+import { useEffect } from 'react'
+// import { useDispatch } from 'react-redux'
+// import { resetComponents } from '../store/componentsReducer'
+
+// function useLoadQuestionData() {
+//   const { id = '' } = useParams()
+//   const dispatch = useDispatch()
+
+//   // 1. 请求问卷数据（自动触发，id 变就重发）
+//   const { data, loading, error } = useRequest(
+//     async () => {
+//       if (!id) throw new Error('缺少问卷 ID')
+//       return await getQuestionService(id)
+//     },
+//     {
+//       refreshDeps: [id],
+//     }
+//   )
+
+//   // 2. 数据拿到后 → 存入 Redux（你之前漏掉了！）
+//   useEffect(() => {
+//     if (!data) return
+//     const { componentList = [] } = data
+//     dispatch(resetComponents({ componentList }))
+//   }, [data, dispatch])
+
+//   return { loading, error, data }
+// }
+
+// export default useLoadQuestionData

@@ -1,0 +1,55 @@
+.empty {
+  color: #999;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.wrapper {
+  align-items: center;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  line-height: 1;
+  padding: 10px 4px;
+
+  &:hover {
+    background-color: #fafafa;
+
+    .btn {
+      opacity: 1;
+    }
+  }
+}
+
+.selected {
+  color: #1677ff;
+}
+
+.title {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hidden {
+  color: #bbb;
+  text-decoration: line-through;
+}
+
+.handler {
+  color: #999;
+  flex: none;
+  font-size: 14px;
+
+  &:hover {
+    color: #1677ff;
+  }
+}
+
+.btn {
+  opacity: 0.35;
+  transition: opacity 0.2s;
+}
