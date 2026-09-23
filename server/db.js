@@ -17,6 +17,18 @@ const pool = databaseUrl
 let memoryDb
 const id = () => crypto.randomUUID()
 
+function createDefaultComponentList() {
+  return [
+    { fe_id: id(), type: 'questionTitle', title: '标题', props: { text: '一份新的问卷', level: 1, isCenter: true } },
+    { fe_id: id(), type: 'questionParagraph', title: '段落', props: { text: '感谢你的参与，请根据实际情况填写以下内容。', isCenter: false } },
+    { fe_id: id(), type: 'questionInfo', title: '问卷信息', props: { title: '问卷标题', desc: '问卷描述' } },
+    { fe_id: id(), type: 'questionInput', title: '输入框', props: { title: '输入框标题', placeholder: '请输入...' } },
+    { fe_id: id(), type: 'questionTextarea', title: '多行输入', props: { title: '多行输入标题', placeholder: '请输入...' } },
+    { fe_id: id(), type: 'questionRadio', title: '单选', props: { title: '单选标题', isVertical: true, options: [{ text: '选项1', value: 'option1' }, { text: '选项2', value: 'option2' }] } },
+    { fe_id: id(), type: 'questionCheckbox', title: '多选', props: { title: '多选标题', isVertical: true, list: [{ text: '选项1', value: 'option1', checked: false }, { text: '选项2', value: 'option2', checked: false }] } },
+  ]
+}
+
 function createSeed() {
   const now = new Date().toISOString()
   const userId = id()
@@ -162,4 +174,4 @@ async function writeDb(db) {
   else writeJsonDb(db)
 }
 
-module.exports = { id, initDb, readDb, writeDb }
+module.exports = { id, initDb, readDb, writeDb, createDefaultComponentList }

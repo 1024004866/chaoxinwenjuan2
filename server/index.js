@@ -3,7 +3,7 @@ const cors = require('cors')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const path = require('path')
-const { id, initDb, readDb, writeDb } = require('./db')
+const { id, initDb, readDb, writeDb, createDefaultComponentList } = require('./db')
 
 const app = express()
 const port = Number(process.env.PORT || 8000)
@@ -76,7 +76,7 @@ app.get('/api/question', authRequired, (req, res) => {
 
 app.post('/api/question', authRequired, async (req, res) => {
   const now = new Date().toISOString()
-  const question = { id: id(), userId: req.user.sub, title: '未命名问卷', desc: '', js: '', css: '', isStar: false, isDeleted: false, isPublished: false, answerCount: 0, createdAt: now, updatedAt: now, componentList: [] }
+  const question = { id: id(), userId: req.user.sub, title: '未命名问卷', desc: '', js: '', css: '', isStar: false, isDeleted: false, isPublished: false, answerCount: 0, createdAt: now, updatedAt: now, componentList: createDefaultComponentList() }
   const db = readDb(); db.questions.unshift(question); await writeDb(db)
   return ok(res, { id: question.id })
 })
