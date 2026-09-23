@@ -1,6 +1,6 @@
 import { message } from 'antd' //鍙戦€佽姹?鈫?鎺ユ敹鍚庣杩斿洖鐨勬暟鎹?
 import axios from 'axios'
-import { getToken } from '../utills/user-token'
+import { getToken, removeToken } from '../utills/user-token'
 const instance = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL || '',
   timeout: 10 * 1000,
@@ -23,6 +23,7 @@ instance.interceptors.response.use(res => {
   const { errno, data, msg } = resData
 
   if (errno !== 0) {
+    if (errno === 401) removeToken()
     message.error(msg || '请求失败')
     throw new Error(msg || '请求失败')
   }

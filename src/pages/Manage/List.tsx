@@ -60,12 +60,7 @@ const List: FC = () => {
     { wait: 500 }
   )
 
-  // 初始化加载
-  useEffect(() => {
-    load()
-  }, [load])
-
-  // 搜索变化重新加载
+  // 初始化和搜索条件变化时加载一次，避免两个 effect 在首次渲染时重复请求
   useEffect(() => {
     load()
   }, [searchParams, load])
