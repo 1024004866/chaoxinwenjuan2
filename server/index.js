@@ -3,7 +3,7 @@ const cors = require('cors')
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const path = require('path')
-const { id, readDb, writeDb } = require('./db')
+const { id, initDb, readDb, writeDb } = require('./db')
 
 const app = express()
 const port = Number(process.env.PORT || 8000)
@@ -36,14 +36,14 @@ function publicQuestion(question) {
   return { ...data, answerCount }
 }
 
-app.post('/api/user/register', (req, res) => {
+app.post('/api/user/register', async (req, res) => {
   const { username, password, nickname } = req.body || {}
   if (!username || !password) return fail(res, 400, '用户名和密码不能为空')
   const db = readDb()
   if (db.users.some(item => item.username === username)) return fail(res, 409, '用户名已存在')
   const user = { id: id(), username, nickname: nickname || username, passwordHash: bcrypt.hashSync(password, 10), createdAt: new Date().toISOString() }
   db.users.push(user)
-  writeDb(db)
+  await writeDb(db)
   return ok(res, { id: user.id, username: user.username, nickname: user.nickname })
 })
 
@@ -74,10 +74,10 @@ app.get('/api/question', authRequired, (req, res) => {
   return ok(res, { list, total: filtered.length })
 })
 
-app.post('/api/question', authRequired, (req, res) => {
+app.post('/api/question', authRequired, async (req, res) => {
   const now = new Date().toISOString()
   const question = { id: id(), userId: req.user.sub, title: '未命名问卷', desc: '', js: '', css: '', isStar: false, isDeleted: false, isPublished: false, answerCount: 0, createdAt: now, updatedAt: now, componentList: [] }
-  const db = readDb(); db.questions.unshift(question); writeDb(db)
+  const db = readDb(); db.questions.unshift(question); await writeDb(db)
   return ok(res, { id: question.id })
 })
 
@@ -87,36 +87,36 @@ app.get('/api/question/:questionId', optionalAuth, (req, res) => {
   return ok(res, publicQuestion(question))
 })
 
-app.patch('/api/question/:questionId', authRequired, (req, res) => {
+app.patch('/api/question/:questionId', authRequired, async (req, res) => {
   const db = readDb(); const question = db.questions.find(q => q.id === req.params.questionId && q.userId === req.user.sub)
   if (!question) return fail(res, 404, '问卷不存在')
   const allowed = ['title', 'desc', 'js', 'css', 'isStar', 'isDeleted', 'isPublished', 'componentList']
   allowed.forEach(key => { if (req.body[key] !== undefined) question[key] = req.body[key] })
-  question.updatedAt = new Date().toISOString(); writeDb(db)
+  question.updatedAt = new Date().toISOString(); await writeDb(db)
   return ok(res, { ...question, _id: question.id })
 })
 
-app.post('/api/question/duplicate/:questionId', authRequired, (req, res) => {
+app.post('/api/question/duplicate/:questionId', authRequired, async (req, res) => {
   const db = readDb(); const source = db.questions.find(q => q.id === req.params.questionId && q.userId === req.user.sub)
   if (!source) return fail(res, 404, '问卷不存在')
   const copy = { ...source, id: id(), title: `${source.title} - 副本`, isPublished: false, isDeleted: false, answerCount: 0, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), componentList: JSON.parse(JSON.stringify(source.componentList)).map(item => ({ ...item, fe_id: id() })) }
-  db.questions.unshift(copy); writeDb(db); return ok(res, { id: copy.id })
+  db.questions.unshift(copy); await writeDb(db); return ok(res, { id: copy.id })
 })
 
-app.delete('/api/question', authRequired, (req, res) => {
+app.delete('/api/question', authRequired, async (req, res) => {
   const ids = Array.isArray(req.body?.ids) ? req.body.ids : []
   const db = readDb(); db.questions = db.questions.filter(q => !(ids.includes(q.id) && q.userId === req.user.sub))
-  writeDb(db); return ok(res, {})
+  await writeDb(db); return ok(res, {})
 })
 
-app.post('/api/answer/:questionId', (req, res) => {
+app.post('/api/answer/:questionId', async (req, res) => {
   const db = readDb(); const question = db.questions.find(q => q.id === req.params.questionId && q.isPublished && !q.isDeleted)
   if (!question) return fail(res, 404, '问卷不存在或尚未发布')
   const answers = req.body?.answers
   if (!answers || typeof answers !== 'object') return fail(res, 400, '答卷内容不能为空')
   db.answers.push({ id: id(), questionId: question.id, answers, createdAt: new Date().toISOString() })
   question.answerCount = db.answers.filter(item => item.questionId === question.id).length
-  writeDb(db); return ok(res, { id: db.answers[db.answers.length - 1].id })
+  await writeDb(db); return ok(res, { id: db.answers[db.answers.length - 1].id })
 })
 
 app.get('/api/stat/:questionId', authRequired, (req, res) => {
@@ -149,4 +149,11 @@ app.get(/^(?!\/api).*/, (_req, res) => {
 })
 
 app.use((error, _req, res, _next) => { console.error(error); return fail(res, 500, '服务器内部错误') })
-app.listen(port, () => console.log(`Questionnaire API listening on http://localhost:${port}`))
+initDb()
+  .then(({ provider }) => {
+    app.listen(port, () => console.log(`Questionnaire API listening on http://localhost:${port} (${provider})`))
+  })
+  .catch(error => {
+    console.error('Database initialization failed', error)
+    process.exitCode = 1
+  })

@@ -88,7 +88,7 @@ npm start
 
 ## 当前限制
 
-- 本地 API 使用 JSON 文件，适合面试演示；生产环境应替换为 PostgreSQL/MySQL。
+- 未配置 `DATABASE_URL` 时，API 使用 JSON 文件，适合本地演示；配置 PostgreSQL 连接串后会自动建表并使用真实数据库。
 - 当前没有公网演示地址；部署配置已保存在 `render.yaml`，但 Render 账号需要银行卡验证。
 
 ## 验证命令
@@ -103,7 +103,7 @@ npm run build
 
 仓库包含 `render.yaml`，可以在 Render 中选择 **New Blueprint**，连接 GitHub 仓库后自动创建一个 Web Service。服务会先构建 React，再由同一个 Node 进程提供静态页面和 `/api` 接口。
 
-部署完成后，将 Render 分配的 `https://...onrender.com` 地址作为项目演示地址。当前示例数据库使用本地 JSON 文件，适合面试演示；生产环境建议替换为 PostgreSQL，并把 `JWT_SECRET` 配置为平台环境变量。
+部署完成后，将 Render 分配的 `https://...onrender.com` 地址作为项目演示地址。线上部署时请同时配置 `DATABASE_URL` 和 `JWT_SECRET`；Supabase、Neon、Railway PostgreSQL 均可提供连接串。
 
 ## 面试演示建议
 
