@@ -12,22 +12,20 @@ import { loginReducer } from '../store/userReducer'
 
 const { Title } = Typography
 const USERNAME_KEY = 'USERNAME'
-const PASSWORD_KEY = 'PASSWORD'
 
-function rememberUser(username: string, password: string) {
+function rememberUser(username: string) {
   localStorage.setItem(USERNAME_KEY, username)
-  localStorage.setItem(PASSWORD_KEY, password)
 }
 
 function deleteUserFromStorage() {
   localStorage.removeItem(USERNAME_KEY)
-  localStorage.removeItem(PASSWORD_KEY)
+  // 清理旧版本曾保存的明文密码
+  localStorage.removeItem('PASSWORD')
 }
 
 function getUserInfoFromStorage() {
   return {
     username: localStorage.getItem(USERNAME_KEY),
-    password: localStorage.getItem(PASSWORD_KEY),
   }
 }
 
@@ -37,8 +35,8 @@ const Login: FC = () => {
   const [form] = Form.useForm()
 
   useEffect(() => {
-    const { username, password } = getUserInfoFromStorage()
-    form.setFieldsValue({ username, password })
+    const { username } = getUserInfoFromStorage()
+    form.setFieldsValue({ username })
   }, [form, nav])
 
   const { run } = useRequest(
@@ -61,10 +59,10 @@ const Login: FC = () => {
   )
 
   const onFinish = (values: { username: string; password: string; remember: boolean }) => {
-    const { username, password, remember } = values
+    const { username, remember } = values
     run(values)
     if (remember) {
-      rememberUser(username, password)
+      rememberUser(username)
     } else {
       deleteUserFromStorage()
     }
