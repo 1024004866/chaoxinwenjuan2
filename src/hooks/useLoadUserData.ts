@@ -1,5 +1,5 @@
 import { useRequest } from 'ahooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getUserInfoService } from '../services/user'
 import { loginReducer } from '../store/userReducer'
 import useGetUserInfo from './useGetUserInfo'
@@ -8,6 +8,7 @@ import { getToken } from '../utills/user-token'
 
 function useLoadUserData() {
   const [waitingUserData, setWaitingUserData] = useState(true)
+  const hasRequestedRef = useRef(false)
   const dispatch = useDispatch()
   const { username } = useGetUserInfo()
 
@@ -32,6 +33,8 @@ function useLoadUserData() {
       setWaitingUserData(false)
       return
     }
+    if (hasRequestedRef.current) return
+    hasRequestedRef.current = true
     run()
   }, [username, run])
 

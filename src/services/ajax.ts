@@ -23,9 +23,10 @@ instance.interceptors.response.use(res => {
   const { errno, data, msg } = resData
 
   if (errno !== 0) {
+    const errorMessage = msg || '请求失败'
     if (errno === 401) removeToken()
-    message.error(msg || '请求失败')
-    throw new Error(msg || '请求失败')
+    message.error({ content: errorMessage, key: errno === 401 ? 'auth-error' : `api-error-${errorMessage}` })
+    throw new Error(errorMessage)
   }
   return data
 }, error => {
