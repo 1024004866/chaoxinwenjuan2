@@ -28,10 +28,10 @@
 ```bash
 cd react-program
 npm install
-npm start
+npm run dev
 ```
 
-`npm start` 会同时启动 Web `http://localhost:3000` 和 API `http://localhost:8000`。也可以分开运行 `npm run server` 与 `npm run web`。
+`npm run dev` 会同时启动 Web `http://localhost:3000` 和 API `http://localhost:8000`。也可以分开运行 `npm run server` 与 `npm run web`；`npm start` 用于生产环境启动编译后的应用。
 
 首次启动会创建 `.data/db.json`。演示账号为：
 

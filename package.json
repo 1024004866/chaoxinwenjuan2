@@ -43,7 +43,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "concurrently -k -n API,WEB -c yellow,cyan \"npm:server\" \"npm:web\"",
+    "start": "node server/index.js",
+    "dev": "concurrently -k -n API,WEB -c yellow,cyan \"npm:server\" \"npm:web\"",
     "web": "craco start",
     "server": "node server/index.js",
     "build": "craco build",
