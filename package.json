@@ -24,6 +24,7 @@
     "classnames": "^2.5.1",
     "concurrently": "^10.0.5",
     "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
     "express": "^5.2.1",
     "immer": "^11.1.4",
     "jsonwebtoken": "^9.0.3",
