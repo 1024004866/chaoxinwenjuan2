@@ -1,5 +1,7 @@
 # 小慕问卷
 
+[![CI](https://github.com/1024004866/chaoxinwenjuan2/actions/workflows/ci.yml/badge.svg)](https://github.com/1024004866/chaoxinwenjuan2/actions/workflows/ci.yml)
+
 一个可独立运行的在线问卷平台，支持问卷搭建、发布、公开填写、答卷统计和回收站管理。项目采用 React + TypeScript 实现管理端，并在同一仓库内提供 Express API；线上连接 Neon PostgreSQL，适合用于前端工程化和全栈能力展示。
 
 > 在线演示：[https://xiaomu-questionnaire-production.up.railway.app](https://xiaomu-questionnaire-production.up.railway.app)
@@ -105,6 +107,8 @@ npm run lint
 npm test -- --runInBand
 npm run build
 ```
+
+GitHub Actions 会在每次推送到 `main` 或提交 Pull Request 时自动执行以上检查。只有代码检查、全部测试和生产构建都通过，CI 状态才会显示为绿色。
 
 ## 部署
 
