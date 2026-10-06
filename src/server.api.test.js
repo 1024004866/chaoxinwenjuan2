@@ -45,7 +45,8 @@ afterAll(async () => {
 })
 
 test('protects private API routes with JWT authentication', async () => {
-  await request(app).get('/api/user/info').expect(401)
+  const unauthorized = await request(app).get('/api/user/info').expect(401)
+  expect(unauthorized.headers['x-request-id']).toMatch(/^[0-9a-f-]{36}$/)
 
   const response = await request(app)
     .get('/api/user/info')

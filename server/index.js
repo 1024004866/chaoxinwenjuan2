@@ -34,6 +34,24 @@ if (!jwtSecret) {
 }
 
 app.use(cors())
+app.use((req, res, next) => {
+  const requestId = id()
+  const startedAt = process.hrtime.bigint()
+  req.requestId = requestId
+  res.set('X-Request-Id', requestId)
+  res.on('finish', () => {
+    const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000
+    console.log(JSON.stringify({
+      event: 'http_request',
+      requestId,
+      method: req.method,
+      path: req.path,
+      status: res.statusCode,
+      durationMs: Math.round(durationMs * 100) / 100,
+    }))
+  })
+  next()
+})
 app.use(express.json({ limit: '1mb' }))
 
 function ok(res, data) { return res.json({ errno: 0, data }) }
@@ -214,8 +232,9 @@ app.get(/^(?!\/api).*/, (_req, res) => {
 })
 
 app.use((error, _req, res, _next) => {
+  const requestId = _req.requestId
   if (error instanceof SyntaxError && error.status === 400 && error.type === 'entity.parse.failed') return fail(res, 400, '请求 JSON 格式不正确')
-  console.error(error)
+  console.error(JSON.stringify({ event: 'http_error', requestId, name: error.name, message: error.message }))
   return fail(res, 500, '服务器内部错误')
 })
 async function initializeApp() {
