@@ -148,7 +148,9 @@ async function createSchema() {
       created_at TIMESTAMPTZ NOT NULL
     );
     CREATE INDEX IF NOT EXISTS questions_user_id_idx ON questions(user_id);
+    CREATE INDEX IF NOT EXISTS questions_owner_status_created_idx ON questions(user_id, is_deleted, created_at DESC);
     CREATE INDEX IF NOT EXISTS answers_question_id_idx ON answers(question_id);
+    CREATE INDEX IF NOT EXISTS answers_question_created_idx ON answers(question_id, created_at DESC);
   `)
 }
 

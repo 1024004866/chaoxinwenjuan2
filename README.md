@@ -66,6 +66,7 @@ npm run dev
 - `src/services` 封装 API 调用，Axios 拦截器统一处理 JWT、错误提示和响应结构。
 - `server` 提供与前端服务层匹配的 REST API；数据库层支持 PostgreSQL 与本地 JSON 两种运行模式。
 - PostgreSQL 写入使用逐条 `INSERT / UPDATE / DELETE`，提交答卷和更新计数在同一事务内完成。
+- 为问卷列表和答卷分页查询建立 `(user_id, is_deleted, created_at)` 与 `(question_id, created_at)` 复合索引，数据库启动时幂等创建。
 - Express 初始化与端口监听分离，Supertest 可直接测试 API，不需要占用真实端口或连接线上数据库。
 - 发布后的问卷通过当前域名生成分享链接和二维码，不依赖硬编码的 localhost 地址。
 
