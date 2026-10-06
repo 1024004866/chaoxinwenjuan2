@@ -55,6 +55,18 @@ test('protects private API routes with JWT authentication', async () => {
   expect(response.body.data.username).toBe('api_test_owner')
 })
 
+test('rejects malformed credentials and answer payloads', async () => {
+  await request(app)
+    .post('/api/user/register')
+    .send({ username: 'ab', password: '123' })
+    .expect(400)
+
+  await request(app)
+    .post('/api/answer/not-a-published-question')
+    .send({ answers: ['invalid'] })
+    .expect(400)
+})
+
 test('keeps draft questionnaires private to their owner', async () => {
   const created = await request(app)
     .post('/api/question')
