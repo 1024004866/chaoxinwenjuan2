@@ -2,7 +2,7 @@
 
 一个可独立运行的在线问卷平台，支持问卷搭建、发布、公开填写、答卷统计和回收站管理。项目采用 React + TypeScript 实现管理端，并在同一仓库内提供 Express API 和本地持久化数据，适合用于前端工程化和全栈协作能力展示。
 
-> 面试演示状态：代码已推送到 GitHub，当前未部署公网服务。建议面试前在本机启动并按下方流程演示。
+> 在线演示：[https://xiaomu-questionnaire-production.up.railway.app](https://xiaomu-questionnaire-production.up.railway.app)
 
 ## 一句话介绍
 
@@ -39,6 +39,8 @@ npm run dev
 用户名：demo_user
 密码：demo123
 ```
+
+线上演示也可以使用该账号登录。Railway 当前使用试用额度，面试前请确认在线地址仍可访问。
 
 ## 主要路由
 
@@ -89,7 +91,7 @@ npm run dev
 ## 当前限制
 
 - 未配置 `DATABASE_URL` 时，API 使用 JSON 文件，适合本地演示；配置 PostgreSQL 连接串后会自动建表并使用真实数据库。
-- 当前没有公网演示地址；部署配置已保存在 `render.yaml`，但 Render 账号需要银行卡验证。
+- 线上环境部署于 Railway，并连接 Neon PostgreSQL；Railway 试用额度到期后需要更换套餐或迁移服务。
 
 ## 验证命令
 
