@@ -169,12 +169,22 @@ app.get(/^(?!\/api).*/, (_req, res) => {
 })
 
 app.use((error, _req, res, _next) => { console.error(error); return fail(res, 500, '服务器内部错误') })
-initDb()
-  .then(({ provider }) => {
-    databaseProvider = provider
-    app.listen(port, () => console.log(`Questionnaire API listening on http://localhost:${port} (${provider})`))
-  })
-  .catch(error => {
+async function initializeApp() {
+  const { provider } = await initDb()
+  databaseProvider = provider
+  return app
+}
+
+async function startServer() {
+  try {
+    await initializeApp()
+    app.listen(port, () => console.log(`Questionnaire API listening on http://localhost:${port} (${databaseProvider})`))
+  } catch (error) {
     console.error('Database initialization failed', error)
     process.exitCode = 1
-  })
+  }
+}
+
+if (require.main === module) startServer()
+
+module.exports = { app, initializeApp }

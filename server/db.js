@@ -4,8 +4,8 @@ const crypto = require('crypto')
 const bcrypt = require('bcryptjs')
 const { Pool } = require('pg')
 
-const dataDir = path.join(__dirname, '..', '.data')
-const dataFile = path.join(dataDir, 'db.json')
+const dataFile = process.env.QUESTIONNAIRE_DATA_FILE || path.join(__dirname, '..', '.data', 'db.json')
+const dataDir = path.dirname(dataFile)
 const databaseUrl = process.env.DATABASE_URL
 const pool = databaseUrl
   ? new Pool({

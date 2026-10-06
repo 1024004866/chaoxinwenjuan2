@@ -1,6 +1,6 @@
 # 小慕问卷
 
-一个可独立运行的在线问卷平台，支持问卷搭建、发布、公开填写、答卷统计和回收站管理。项目采用 React + TypeScript 实现管理端，并在同一仓库内提供 Express API 和本地持久化数据，适合用于前端工程化和全栈协作能力展示。
+一个可独立运行的在线问卷平台，支持问卷搭建、发布、公开填写、答卷统计和回收站管理。项目采用 React + TypeScript 实现管理端，并在同一仓库内提供 Express API；线上连接 Neon PostgreSQL，适合用于前端工程化和全栈能力展示。
 
 > 在线演示：[https://xiaomu-questionnaire-production.up.railway.app](https://xiaomu-questionnaire-production.up.railway.app)
 
@@ -17,11 +17,12 @@
 - 公开填写页 `/question/:id`，支持表单校验和提交成功页
 - 答卷明细分页、单选饼图、多选柱状图
 - 回收站恢复和彻底删除
-- 本地 JSON 数据持久化，首次启动自动写入演示用户和种子问卷
+- Neon PostgreSQL 线上持久化，本地开发可零配置使用 JSON 数据
+- Jest、Testing Library 与 Supertest 自动化测试
 
 ## 技术栈
 
-前端使用 React 18、TypeScript、React Router 6、Redux Toolkit、redux-undo、Ant Design、ahooks、Axios、dnd-kit、Recharts 和 Sass。服务端使用 Express、JWT、bcryptjs 和 CORS。测试使用 Jest 与 Testing Library，构建使用 CRACO。
+前端使用 React 18、TypeScript、React Router 6、Redux Toolkit、redux-undo、Ant Design、ahooks、Axios、dnd-kit、Recharts 和 Sass。服务端使用 Express、PostgreSQL、JWT、bcryptjs 和 CORS。测试使用 Jest、Testing Library 与 Supertest，构建使用 CRACO。
 
 ## 快速启动
 
@@ -61,7 +62,9 @@ npm run dev
 - `src/store/componentsReducer` 管理编辑器组件树，使用 `redux-undo` 保留历史状态。
 - `src/components/QuestionComponents` 通过组件配置统一展示、属性编辑和统计组件，方便扩展新题型。
 - `src/services` 封装 API 调用，Axios 拦截器统一处理 JWT、错误提示和响应结构。
-- `server` 提供与前端服务层匹配的 REST API；`.data` 只用于本地开发，不提交到版本库。
+- `server` 提供与前端服务层匹配的 REST API；数据库层支持 PostgreSQL 与本地 JSON 两种运行模式。
+- PostgreSQL 写入使用逐条 `INSERT / UPDATE / DELETE`，提交答卷和更新计数在同一事务内完成。
+- Express 初始化与端口监听分离，Supertest 可直接测试 API，不需要占用真实端口或连接线上数据库。
 - 发布后的问卷通过当前域名生成分享链接和二维码，不依赖硬编码的 localhost 地址。
 
 ## 面试演示流程
@@ -79,14 +82,16 @@ npm run dev
 - 使用组件配置表统一题目展示、属性面板和统计组件，新增题型只需补充配置和组件。
 - 使用 dnd-kit 完成拖拽排序，并处理隐藏、锁定、复制、粘贴和键盘快捷键。
 - 使用 Axios 拦截器统一注入 JWT、解析后端响应和处理错误提示。
-- 使用 Express 提供 REST API，用 JSON 文件持久化本地演示数据，前端和 API 可独立替换。
+- 使用 Express 提供 REST API，以 JWT 完成鉴权和资源权限隔离，并使用 Neon PostgreSQL 持久化数据。
+- 将答卷写入和答卷计数更新置于同一数据库事务，避免并发写入导致统计数量不一致。
+- 使用 Supertest 覆盖鉴权、草稿访问、防越权修改、问卷发布、答卷提交与统计查询。
 - 使用 Recharts 将单选和多选答卷聚合为可视化图表。
 
 ## 简历描述（可直接参考）
 
 **小慕问卷 | React + TypeScript + Express**
 
-独立开发在线问卷平台，完成用户认证、可视化问卷编辑、拖拽排序、发布分享、公开答卷和数据统计闭环；使用 Redux Toolkit 管理编辑器组件树，结合 redux-undo 实现撤销/重做，使用 dnd-kit 完成拖拽交互，使用 Recharts 展示题目统计，并通过 Express + JWT 提供配套 REST API。
+独立开发并部署在线问卷平台，完成 JWT 用户认证、可视化问卷编辑、拖拽排序、发布分享、公开答卷和数据统计闭环；使用 Redux Toolkit 与 redux-undo 管理编辑器状态，使用 dnd-kit 完成拖拽交互，使用 Express + Neon PostgreSQL 提供持久化 REST API，并通过 Jest、Testing Library 和 Supertest 覆盖核心流程。
 
 ## 当前限制
 
@@ -103,9 +108,9 @@ npm run build
 
 ## 部署
 
-仓库包含 `render.yaml`，可以在 Render 中选择 **New Blueprint**，连接 GitHub 仓库后自动创建一个 Web Service。服务会先构建 React，再由同一个 Node 进程提供静态页面和 `/api` 接口。
+当前项目部署在 Railway。服务会先构建 React，再由同一个 Node 进程提供静态页面和 `/api` 接口；线上通过 `DATABASE_URL` 连接 Neon PostgreSQL，并通过 `JWT_SECRET` 签发登录令牌。
 
-部署完成后，将 Render 分配的 `https://...onrender.com` 地址作为项目演示地址。线上部署时请同时配置 `DATABASE_URL` 和 `JWT_SECRET`；Supabase、Neon、Railway PostgreSQL 均可提供连接串。
+生产环境必须配置 `DATABASE_URL`、`JWT_SECRET` 和 `NODE_ENV=production`，敏感配置只保存在部署平台环境变量中，不提交到版本库。
 
 ## 面试演示建议
 
