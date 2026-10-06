@@ -5,6 +5,8 @@ import {
   CopyOutlined,
   DeleteOutlined,
   ExclamationCircleOutlined,
+  EyeOutlined,
+  LinkOutlined,
 } from '@ant-design/icons'
 import { updateQuestionService, duplicateQuestionService } from '../services/question'
 import { Button, Space, Divider, Tag, Popconfirm, Modal, message } from 'antd'
@@ -80,6 +82,17 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
     })
   }
 
+  const publicUrl = `${window.location.origin}/question/${_id}`
+
+  async function copyPublicLink() {
+    try {
+      await navigator.clipboard.writeText(publicUrl)
+      message.success('填写链接已复制')
+    } catch {
+      message.error('复制失败，请进入问卷统计页手动复制')
+    }
+  }
+
   if (isDeletedState) return null
 
   return (
@@ -90,7 +103,7 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
           <Link to={isPublished ? `/question/stat/${_id}` : `/question/edit/${_id}`}>{title}</Link>
         </div>
         <div className={styles.right}>
-          <Space>
+          <Space wrap>
             {isPublished ? <Tag color="processing">已发布</Tag> : <Tag>未发布</Tag>}
             <span>答卷: {answerCount}</span>
             <span>{createTime}</span>
@@ -118,10 +131,30 @@ const QuestionCard: FC<PropsType> = (props: PropsType) => {
             >
               问卷统计
             </Button>
+            <Button
+              icon={<EyeOutlined />}
+              type="text"
+              size="small"
+              href={isPublished ? publicUrl : undefined}
+              target={isPublished ? '_blank' : undefined}
+              rel={isPublished ? 'noopener noreferrer' : undefined}
+              disabled={!isPublished}
+            >
+              预览填写端
+            </Button>
+            <Button
+              icon={<LinkOutlined />}
+              type="text"
+              size="small"
+              onClick={copyPublicLink}
+              disabled={!isPublished}
+            >
+              复制填写链接
+            </Button>
           </Space>
         </div>
         <div className={styles.right}>
-          <Space>
+          <Space wrap>
             <Button
               type="text"
               icon={<StarOutlined />}

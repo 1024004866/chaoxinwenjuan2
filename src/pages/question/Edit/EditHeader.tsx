@@ -1,7 +1,7 @@
 import React ,{FC, useState} from "react";
 import {Button,Typography,Space, Input, message} from 'antd'
 import {useNavigate, useParams} from 'react-router-dom'
-import {LeftOutlined,EditOutlined, LoadingOutlined} from '@ant-design/icons'
+import {LeftOutlined,EditOutlined, EyeOutlined, LoadingOutlined} from '@ant-design/icons'
 import styles from './EditHeader.module.scss'
 import useGetPageInfo from "../../../hooks/useGetPageInfo";
 import useGetComponentInfo from "../../../hooks/useGetComponentInfo";
@@ -108,6 +108,25 @@ const PublishButton: FC = () => {
     </Button>
   );
 };
+
+const PreviewButton: FC = () => {
+  const { id } = useParams()
+  const { isPublished } = useGetPageInfo()
+  const publicUrl = id ? `${window.location.origin}/question/${id}` : ''
+
+  return (
+    <Button
+      icon={<EyeOutlined />}
+      href={isPublished ? publicUrl : undefined}
+      target={isPublished ? '_blank' : undefined}
+      rel={isPublished ? 'noopener noreferrer' : undefined}
+      disabled={!isPublished}
+    >
+      预览填写端
+    </Button>
+  )
+}
+
     //编辑器头部
 const EditHeader:FC=()=>{
     const nav = useNavigate();
@@ -127,6 +146,7 @@ const EditHeader:FC=()=>{
             <div className={styles.right}>
                <Space size="middle">
                <SaveButton/>
+               <PreviewButton/>
                <PublishButton/>
                </Space>
             </div>
