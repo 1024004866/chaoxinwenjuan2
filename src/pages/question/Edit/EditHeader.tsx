@@ -9,7 +9,7 @@ import EditToolbar from "./EditToolbar";
 import {changePageTitle} from '../../../store/pageInfoReducer'
 import {useDispatch} from 'react-redux' 
 import { updateQuestionService } from "../../../services/question";
-import { useDebounceEffect, useKeyPress, useRequest } from "ahooks";
+import { useDebounceEffect, useKeyPress, useRequest, useTitle } from "ahooks";
 const {Title} = Typography
 //显示和修改标题
 const TitleElem:FC=()=>{
@@ -130,6 +130,8 @@ const PreviewButton: FC = () => {
     //编辑器头部
 const EditHeader:FC=()=>{
     const nav = useNavigate();
+    const { title } = useGetPageInfo();
+    useTitle(title ? `编辑问卷-${title}` : '编辑问卷');
     return <div className={styles['header-wrapper']}>
         <div className={styles.header}>
             <div className={styles.left}>

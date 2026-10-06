@@ -11,6 +11,12 @@ import { updateQuestionService, deleteQuestionsService } from '../../services/qu
 const { Title } = Typography
 const { confirm } = Modal
 
+function formatDate(value: string) {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  return new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }).format(date)
+}
+
 export type QuestionType = {
   _id: string
   title: string
@@ -87,6 +93,7 @@ const Trash: FC = () => {
     {
       title: '创建时间',
       dataIndex: 'createdAt',
+      render: (createdAt: string) => formatDate(createdAt),
     },
   ]
 
