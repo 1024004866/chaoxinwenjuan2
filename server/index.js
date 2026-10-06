@@ -26,6 +26,7 @@ const {
 const app = express()
 const port = Number(process.env.PORT || 8000)
 const jwtSecret = process.env.JWT_SECRET || (process.env.NODE_ENV === 'production' ? '' : 'questionnaire-demo-secret')
+let databaseProvider = 'initializing'
 
 if (!jwtSecret) {
   throw new Error('JWT_SECRET is required in production')
@@ -158,7 +159,7 @@ app.get('/api/stat/component/:questionId/:componentId', authRequired, async (req
   return ok(res, { stat: [...counts.entries()].map(([name, count]) => ({ name, count })) })
 })
 
-app.get('/api/health', (_req, res) => ok(res, { status: 'ok', service: 'questionnaire-api' }))
+app.get('/api/health', (_req, res) => ok(res, { status: 'ok', service: 'questionnaire-api', database: databaseProvider, persistence: 'incremental' }))
 
 // In production Render serves the compiled React app from the same process.
 const buildDir = path.join(__dirname, '..', 'build')
@@ -170,6 +171,7 @@ app.get(/^(?!\/api).*/, (_req, res) => {
 app.use((error, _req, res, _next) => { console.error(error); return fail(res, 500, '服务器内部错误') })
 initDb()
   .then(({ provider }) => {
+    databaseProvider = provider
     app.listen(port, () => console.log(`Questionnaire API listening on http://localhost:${port} (${provider})`))
   })
   .catch(error => {
