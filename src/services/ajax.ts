@@ -30,6 +30,7 @@ instance.interceptors.response.use(res => {
   }
   return data
 }, error => {
+  if (error.response?.status === 401) removeToken()
   const msg = error.response?.data?.msg || (error.code === 'ECONNABORTED' ? '请求超时，请稍后重试' : '网络异常，请确认 API 服务已启动')
   message.error(msg)
   return Promise.reject(error)
