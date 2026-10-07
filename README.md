@@ -6,9 +6,45 @@
 
 > 在线演示：[https://xiaomu-questionnaire-production.up.railway.app](https://xiaomu-questionnaire-production.up.railway.app)
 
+演示账号：`demo_user` / `demo123`
+
 ## 一句话介绍
 
 这是一个带可视化编辑器的问卷 SaaS 原型：用户可以拖拽搭建问卷、发布公开链接，访客提交答卷后，创建者可以在后台查看明细和题目统计图表。
+
+## 项目截图
+
+### 可视化问卷编辑器
+
+![可视化问卷编辑器](output/playwright/interview/question-editor.png)
+
+### 问卷管理
+
+![问卷管理列表](output/playwright/interview/question-list.png)
+
+## 系统架构
+
+```mermaid
+flowchart LR
+  Browser[React 18 + TypeScript] -->|Axios / JWT| API[Express REST API]
+  API --> Auth[JWT 鉴权与权限校验]
+  API --> Service[问卷与答卷业务]
+  Service --> DB[(Neon PostgreSQL)]
+  API --> Log[结构化日志 / Request ID]
+  GitHub[GitHub Actions] -->|Lint + 8 Tests + Build| Railway[Railway]
+  Railway --> Browser
+  Railway --> API
+```
+
+核心链路：创建者编辑并发布问卷，访客通过公开链接提交答卷，服务端在事务中写入答卷并更新计数，创建者随后查看答卷明细和图表统计。
+
+## 工程指标
+
+- 3 个测试套件、8 个自动化测试，覆盖组件、状态管理和核心 API 权限流程
+- GitHub Actions 自动执行依赖安装、Lint、测试与生产构建
+- 路由懒加载后首屏主 JS 从约 `526 KB` 降至约 `284 KB`，减少约 `46%`
+- PostgreSQL 采用事务写入、复合索引和参数化查询
+- Railway + Neon 提供可公开访问的生产环境
 
 ## 功能
 
@@ -79,6 +115,8 @@ npm run dev
 5. 在新标签页填写并提交答卷。
 6. 返回统计页查看答卷明细和单选/多选图表。
 
+完整讲解顺序、常见追问和回答要点见 [面试讲解指南](docs/INTERVIEW_GUIDE.md)。
+
 ## 面试可讲的技术点
 
 - 使用 Redux Toolkit 管理组件树和页面信息，用 `redux-undo` 实现编辑器撤销/重做。
@@ -120,7 +158,3 @@ GitHub Actions 会在每次推送到 `main` 或提交 Pull Request 时自动执�
 当前项目部署在 Railway。服务会先构建 React，再由同一个 Node 进程提供静态页面和 `/api` 接口；线上通过 `DATABASE_URL` 连接 Neon PostgreSQL，并通过 `JWT_SECRET` 签发登录令牌。
 
 生产环境必须配置 `DATABASE_URL`、`JWT_SECRET` 和 `NODE_ENV=production`，敏感配置只保存在部署平台环境变量中，不提交到版本库。
-
-## 面试演示建议
-
-登录演示账号后，新建问卷并从组件库添加题目，拖拽调整顺序后发布。复制统计页生成的公开链接，在新标签页提交一份答卷，再回到统计页查看答卷明细和题目图表。这个流程可以完整展示状态管理、组件设计、表单交互、API 设计和数据可视化。
