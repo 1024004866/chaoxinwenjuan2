@@ -51,25 +51,28 @@ const ManageLayout: FC = () => {
           </Button>
           <Divider style={{ borderTop: 'transparent' }} />
           <Button
+            className={styles.navButton}
             size="large"
-            icon={<BarsOutlined />}
+            icon={<BarsOutlined className={styles.navIcon} />}
             onClick={() => nav('/manage/list')}
             type={pathname.startsWith('/manage/list') ? 'default' : 'text'}
           >
             我的问卷
           </Button>
           <Button
+            className={styles.navButton}
             type={pathname.startsWith('/manage/star') ? 'default' : 'text'}
             size="large"
-            icon={<StarOutlined />}
+            icon={<StarOutlined className={styles.navIcon} />}
             onClick={() => nav('/manage/star')}
           >
             星标问卷
           </Button>
           <Button
+            className={styles.navButton}
             type={pathname.startsWith('/manage/trash') ? 'default' : 'text'}
             size="large"
-            icon={<DeleteOutlined />}
+            icon={<DeleteOutlined className={`${styles.navIcon} ${styles.trashIcon}`} />}
             onClick={() => nav('/manage/trash')}
           >
             回收站

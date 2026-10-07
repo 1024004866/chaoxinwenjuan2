@@ -8,6 +8,20 @@
   .left {
     width: 120px;
   }
+
+  .navButton {
+    width: 120px;
+    justify-content: flex-start;
+  }
+
+  .navIcon {
+    width: 20px;
+    font-size: 19px;
+  }
+
+  .trashIcon {
+    font-size: 21px;
+  }
   
   .right {
     flex: 1;
