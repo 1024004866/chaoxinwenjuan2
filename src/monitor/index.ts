@@ -8,6 +8,28 @@ const STARTED_KEY = '__xiaomu_monitor_started__'
 
 type Report = Record<string, unknown>
 
+const redactSensitive = (input: unknown): unknown => {
+  if (Array.isArray(input)) return input.map(redactSensitive)
+  if (input && typeof input === 'object') {
+    return Object.fromEntries(Object.entries(input as Record<string, unknown>).map(([key, value]) => [
+      key,
+      /password|token|authorization|secret/i.test(key) ? '[REDACTED]' : redactSensitive(value),
+    ]))
+  }
+  return input
+}
+
+const sanitizeBody = (body: unknown) => {
+  if (typeof body !== 'string' || !body) return ''
+  try {
+    return JSON.stringify(redactSensitive(JSON.parse(body))).slice(0, 1000)
+  } catch {
+    return body
+      .replace(/((?:password|token|authorization|secret)=)[^&]*/gi, '$1[REDACTED]')
+      .slice(0, 1000)
+  }
+}
+
 const visitorId = (() => {
   const saved = localStorage.getItem(VISITOR_KEY)
   if (saved) return saved
@@ -98,8 +120,10 @@ const monitorXhr = () => {
     const info = (this as any).__monitor
     if (info) {
       info.start = performance.now()
-      info.body = typeof body === 'string' ? body.slice(0, 1000) : ''
-      this.addEventListener('loadend', () => report({
+      info.body = sanitizeBody(body)
+      this.addEventListener('loadend', () => {
+        if (info.url.includes('.hot-update.')) return
+        report({
         type: 'request',
         transport: 'xhr',
         url: info.url.split('?')[0],
@@ -109,7 +133,8 @@ const monitorXhr = () => {
         status: this.status,
         requestType: this.status >= 200 && this.status < 400 ? 'done' : 'error',
         cost: performance.now() - info.start,
-      }))
+        })
+      })
     }
     return originalSend.call(this, body)
   }
@@ -125,7 +150,7 @@ const monitorFetch = () => {
       const response = await original(input, init)
       report({ type: 'request', transport: 'fetch', url: url.split('?')[0], method, status: response.status,
         requestType: response.ok ? 'done' : 'error', cost: performance.now() - started,
-        reqBody: typeof init.body === 'string' ? init.body.slice(0, 1000) : '', reqHeaders: '' })
+        reqBody: sanitizeBody(init.body), reqHeaders: '' })
       return response
     } catch (error) {
       report({ type: 'request', transport: 'fetch', url: url.split('?')[0], method, status: 0, requestType: 'error',
