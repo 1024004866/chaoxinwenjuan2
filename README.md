@@ -72,6 +72,16 @@ npm run dev
 
 `npm run dev` 会同时启动 Web `http://localhost:3000` 和 API `http://localhost:8000`。也可以分开运行 `npm run server` 与 `npm run web`；`npm start` 用于生产环境启动编译后的应用。
 
+### 前端监控联调
+
+开发环境内置轻量采集模块，会把真实页面访问、Web Vitals、XHR/fetch 请求和浏览器异常上报到 `http://localhost:7001/report`，用于与 `frontend-monitoring-platform` 联调。访客标识保存在 localStorage，监控端根据真实事件计算流量、性能和错误指标。
+
+生产构建默认不启用上报；部署监控服务后可在构建时设置：
+
+```bash
+REACT_APP_MONITOR_API_URL=https://你的监控域名/report npm run build
+```
+
 首次启动会创建 `.data/db.json`。演示账号为：
 
 ```text
