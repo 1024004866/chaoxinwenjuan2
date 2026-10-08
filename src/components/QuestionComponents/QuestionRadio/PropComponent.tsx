@@ -1,17 +1,22 @@
-import React, { FC, useEffect } from 'react'
-import { Button, Checkbox, Form, Input, Select, Space } from 'antd'
+import React, { FC, useEffect, useMemo } from 'react'
+import { Button, Checkbox, Form, Input, Select, Space, Tooltip } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { nanoid } from '@reduxjs/toolkit'
 import { OptionsType, QuestionRadioDefaultProps, QuestionRadioPropsType } from './interface'
 
 const PropComponent: FC<QuestionRadioPropsType> = (props: QuestionRadioPropsType) => {
-  const defaultOptions = QuestionRadioDefaultProps.options || []
-  const normalizedOptions =
-    props.options && props.options.length > 0
-      ? props.options.map((opt, index) => ({
-          text: opt.text || `选项${index + 1}`,
-          value: opt.value || `option${index + 1}`,
-        }))
-      : defaultOptions
+  const normalizedOptions = useMemo(
+    () => {
+      const defaultOptions = QuestionRadioDefaultProps.options || []
+      return props.options && props.options.length > 0
+        ? props.options.map((opt, index) => ({
+            text: opt.text || `选项${index + 1}`,
+            value: opt.value || `option${index + 1}`,
+          }))
+        : defaultOptions
+    },
+    [props.options]
+  )
   const title = props.title ?? QuestionRadioDefaultProps.title
   const isVertical = props.isVertical ?? QuestionRadioDefaultProps.isVertical
   const options = normalizedOptions
@@ -92,14 +97,25 @@ const PropComponent: FC<QuestionRadioPropsType> = (props: QuestionRadioPropsType
                       style={{ width: '100%' }}
                     />
                   </Form.Item>
-                  {index > 1 && <MinusCircleOutlined onClick={() => remove(name)} />}
+                  {fields.length > 2 && (
+                    <Tooltip title="删除选项">
+                      <Button
+                        type="text"
+                        danger
+                        size="small"
+                        aria-label={`删除选项${index + 1}`}
+                        icon={<MinusCircleOutlined />}
+                        onClick={() => remove(name)}
+                      />
+                    </Tooltip>
+                  )}
                 </Space>
               ))}
 
               <Form.Item>
                 <Button
                   type="link"
-                  onClick={() => add({ text: '', value: `option${fields.length + 1}` })}
+                  onClick={() => add({ text: '', value: `option-${nanoid()}` })}
                   icon={<PlusOutlined />}
                   block
                 >

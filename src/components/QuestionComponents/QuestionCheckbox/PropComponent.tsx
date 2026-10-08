@@ -1,6 +1,7 @@
 import React, { FC, useEffect } from 'react'
-import { Button, Checkbox, Form, Input, Space } from 'antd'
+import { Button, Checkbox, Form, Input, Space, Tooltip } from 'antd'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
+import { nanoid } from '@reduxjs/toolkit'
 import { OptionsType, QuestionCheckboxDefaultProps, QuestionCheckboxPropsType } from './interface'
 
 const PropComponent: FC<QuestionCheckboxPropsType> = (props: QuestionCheckboxPropsType) => {
@@ -84,7 +85,18 @@ const PropComponent: FC<QuestionCheckboxPropsType> = (props: QuestionCheckboxPro
                       style={{ width: '100%' }}
                     />
                   </Form.Item>
-                  {index > 1 && <MinusCircleOutlined onClick={() => remove(name)} />}
+                  {fields.length > 2 && (
+                    <Tooltip title="删除选项">
+                      <Button
+                        type="text"
+                        danger
+                        size="small"
+                        aria-label={`删除选项${index + 1}`}
+                        icon={<MinusCircleOutlined />}
+                        onClick={() => remove(name)}
+                      />
+                    </Tooltip>
+                  )}
                 </Space>
               ))}
 
@@ -92,7 +104,7 @@ const PropComponent: FC<QuestionCheckboxPropsType> = (props: QuestionCheckboxPro
                 <Button
                   type="link"
                   onClick={() =>
-                    add({ text: '', value: `option${fields.length + 1}`, checked: false })
+                    add({ text: '', value: `option-${nanoid()}`, checked: false })
                   }
                   icon={<PlusOutlined />}
                   block
