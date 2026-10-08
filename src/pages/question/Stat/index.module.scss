@@ -11,24 +11,64 @@
 
 .content {
   margin: 0 24px;
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(240px, 300px) minmax(0, 1fr) minmax(280px, 360px);
+  gap: 24px;
+  align-items: start;
 
   .left {
-    width: 350px;
-    margin-right: 24px;
+    min-width: 0;
   }
 
   .main {
-    flex: auto;
-    background-color: #fff;
-    padding: 12px 18px;
-  }
-
-  .right {
-    width: 400px;
-    margin-left: 24px;
+    min-width: 0;
     background-color: #fff;
     padding: 12px 18px;
     overflow: hidden;
+  }
+
+  .right {
+    min-width: 0;
+    background-color: #fff;
+    padding: 12px 18px;
+    overflow: hidden;
+  }
+}
+
+@media (max-width: 1200px) {
+  .content {
+    grid-template-columns: minmax(240px, 300px) minmax(0, 1fr);
+
+    .right {
+      grid-column: 1 / -1;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 8px 0;
+  }
+
+  .content {
+    margin: 0 12px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+
+    .left,
+    .main,
+    .right {
+      grid-column: auto;
+    }
+
+    .left {
+      max-height: 360px;
+      overflow-y: auto;
+    }
+
+    .main,
+    .right {
+      padding: 12px;
+    }
   }
 }

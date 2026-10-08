@@ -49,7 +49,12 @@ const columns=componentList.map(c => {
 const dataSource = list.map((i: any) => ({ ...i, key: i._id }))
 const TableElem = <>
 
-    <Table columns={columns} dataSource={dataSource} pagination={false} />
+    <Table
+      columns={columns}
+      dataSource={dataSource}
+      pagination={false}
+      scroll={{ x: 'max-content' }}
+    />
     <div style={{textAlign:'center',marginTop:'18px'}}>
          <Pagination total={total} pageSize={pageSize} current={page} onChange={(page) => {
         setPage(page)
